@@ -1,0 +1,411 @@
+
+%!Tex Program = xelatex
+
+
+\documentclass[hyperref,UTF8,a4paper,openany]{ctexbook}
+\usepackage{zhnumber}
+%\usepackage{ctex}
+\usepackage{graphicx, subfigure}
+
+\usepackage{latexsym, amsmath, amssymb, amsfonts, mathrsfs, amsthm}
+\usepackage{siunitx}
+
+\usepackage{cases}
+
+\usepackage{multirow}
+\usepackage{textcomp}
+\usepackage[top=2.54cm, bottom=2.54cm, left=3.18cm, right=3.18cm]{geometry}
+\usepackage[toc,lof]{multitoc}
+
+\usepackage{asymptote}
+
+\usepackage{hyperref}
+\hypersetup{colorlinks,
+	linkcolor=black,
+	filecolor=black,
+	urlcolor=blue,
+	citecolor=black,
+	pdftitle={Emacs Lisp 编程语言简介},
+	pdfauthor={徐策},
+	pdfsubject={Emacs Lisp, 编程语言},
+	pdfkeywords={Emacs, 编程语言},
+	pdfproducer={XeLaTeX},
+	pdfborder=0 0 1}
+
+\setcounter{secnumdepth}{3} %使subsubsection也有编号
+
+\usepackage{fancyhdr}	%页眉页脚
+
+\usepackage[inline]{enumitem}
+\setlist[enumerate,1]{leftmargin=0pt,itemindent=2em,itemsep=0ex,listparindent=2em,parsep = 0ex,topsep = 1ex}
+\setlist[enumerate,2]{leftmargin=1em,itemsep=0ex,itemindent=2em,listparindent=2em,parsep = 0ex,topsep = 1ex}
+\setlist[enumerate,3]{leftmargin=1em,itemsep=0ex,itemindent=2em,listparindent=2em,parsep = 0ex,topsep = 1ex}
+\setlist[itemize,1]{itemsep = 0ex, parsep = 0ex, topsep = 1ex}
+\setlist[description]{listparindent=2em, itemsep=0ex, parsep = 0ex,topsep = 1ex}
+
+\ctexset{
+	figurename={\kaishu 图},
+	tablename={表},
+	contentsname={目\quad 录},
+	listfigurename={插图目录}
+}
+
+\newcommand{\ds}{\displaystyle}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\mbf}{\boldsymbol}
+\newcommand{\mrm}[1]{\boldsymbol{\mathnormal{#1}}}
+\newcommand{\bnb}{\mbf{\nabla}}
+\newcommand{\pl}{\partial}
+\newcommand{\arcosh}{\mathrm{arcosh}\,}
+\newcommand{\sn}{\mathrm{sn}\,}
+\newcommand{\cn}{\mathrm{cn}\,}
+\newcommand{\tn}{\mathrm{tn}\,}
+\newcommand{\dn}{\mathrm{dn}\,}
+\newcommand{\am}{\mathrm{am}\,}
+\newcommand{\mathd}{\mathrm{d}}
+\newcommand{\mathe}{\mathrm{e}}
+\newcommand{\mathi}{\mathrm{i}}
+\newcommand{\mathj}{\mathrm{j}}
+\newcommand{\mathk}{\mathrm{k}}
+\renewcommand{\vec}{\overrightarrow}
+\renewcommand{\bf}{\heiti}
+\renewcommand{\bfseries}{\heiti}
+\newcommand{\ddt}{\dfrac{\mathd}{\mathd t}}
+\newcommand{\difOp}[1]{\dfrac{\mathd}{\mathd #1}}
+\newcommand{\dif}[2]{\dfrac{\mathd #1}{\mathd #2}}
+\newcommand{\pldif}[2]{\dfrac{\pl #1}{\pl #2}}
+\newcommand{\trans}{\mathrm{T}}
+\renewcommand{\Re}{\mathrm{Re}\,}
+\renewcommand{\Im}{\mathrm{Im}\,}
+
+\newtheoremstyle{theoremwithoutdot}% 类型名
+  {}%                   Space above, empty = `usual value'
+  {}%                   Space below
+  {\kaishu}%                   Body font
+  {}%         Indent amount (empty = no indent, \parindent = para indent)
+  {\heiti}%          Thm head font
+  {}%                   Punctuation after thm head
+  {1em}%                Space after thm head
+  {\thmname{#1}\thmnumber{~#2}\thmnote{~(#3)}}%                   Thm head spec
+  
+ \newtheoremstyle{solutionstyle}% 类型名
+  {}%                   Space above, empty = `usual value'
+  {}%                   Space below
+  {}%                   Body font
+  {}%         Indent amount (empty = no indent, \parindent = para indent)
+  {\heiti}%          Thm head font
+  {}%                   Punctuation after thm head
+  {1em}%                Space after thm head
+  {\thmname{#1}\thmnumber{~#2}\thmnote{~(#3)}}%                   Thm head spec
+
+\theoremstyle{theoremwithoutdot}
+\newtheorem{defi}{定义}[section]
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{prop}[theorem]{命题}
+\newtheorem{coro}{推论}[theorem]
+\newtheorem{remark}{注}
+\newtheorem{example}{例}[chapter]
+\newtheorem{question}{题}[section]
+\newtheorem{property}[theorem]{性质}
+%\renewcommand{\thequestion}{\arabic{chapter}.\arabic{section}.\arabic{question}}
+%\theoremstyle{solutionstyle}
+\newtheorem*{solution}{解}
+%去掉证明后面的点
+\makeatletter
+\renewenvironment{proof}[1][\proofname]{\par%
+\pushQED{\qed}%
+\normalfont \topsep6\p@\@plus6\p@\relax%
+\trivlist%
+\item[\hskip\labelsep%
+#1]\ignorespaces%
+}{%
+\popQED\endtrivlist\@endpefalse%
+}
+\makeatother
+\renewcommand{\proofname}{{\heiti 证明}}
+
+%\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+%带圈脚注
+\usepackage{pifont}
+\usepackage[perpage,stable]{footmisc}  %每页脚注重新编号
+\renewcommand{\thefootnote}{\ding{\numexpr191+\value{footnote}}}
+% 脚注中的脚注序号不用上标，正文中的脚注号保持不变
+\makeatletter
+\def\my@makefnmark{\hbox{\normalfont\@thefnmark\space}}
+\let\my@save@makefntext\@makefntext
+\long\def\@makefntext#1{{%
+  \let\@makefnmark\my@makefnmark
+  \my@save@makefntext{#1}}}
+
+\allowdisplaybreaks[3]
+
+\title{Emacs Lisp 编程语言简介}
+\author{翻译：徐策\thanks{翻译于"An Introdaction to Programming in Emacs Lisp"(Revised Third Edition) by {Robert J. Chaeeell}}\\ Email:\url{201716021013@cqu.edu.cn}}
+%\date{}
+
+\makeatletter
+\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else
+\hbox{}
+\vspace*{\fill}
+
+\vspace{\fill}
+\thispagestyle{empty}
+\newpage
+\if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother
+
+%在插图目录图编号前加上“图”
+%\usepackage{titletoc}
+%\titlecontents{figure}[0.5cm]{\songti}{\figurename~\thecontentslabel\quad}{\hspace*{-1.5cm}}{\titlerule*[0.12cm]{.}\contentspage}[\addvspace{6pt}]
+
+%样式定义
+\usepackage{titlesec}
+\usepackage{xcolor,colortbl}
+\usepackage{tgpagella}
+\usepackage[T1]{fontenc}
+ 
+\definecolor{titlecolor}{RGB}{129,129,188}
+\definecolor{contentcolor}{RGB}{129,188,129}
+\definecolor{backcolor}{RGB}{129,188,129}
+\newcommand{\hwyk}{\heiti}
+ 
+\newcommand{\mytitle}[1]{
+\begin{tabular}{p{0.01\textwidth}p{0.99\textwidth}}
+\cellcolor{black} &\cellcolor{titlecolor} \textcolor{white}
+{\newline\hwyk\LARGE 第\zhnumber{\thechapter}章 \  \ #1}
+\end{tabular}
+\arrayrulewidth=0.4pt
+}
+ 
+\newcommand{\mycont}[1]{
+\vspace{-0.5cm}
+\begin{tabular}{p{0.01\textwidth}p{0.99\textwidth}}
+\cellcolor{black} &\cellcolor{contentcolor} \textcolor{white}
+{\newline\hwyk\LARGE #1}
+\end{tabular}
+\arrayrulewidth=0.4pt
+\vspace{-1.5cm}
+}
+ 
+\newcommand{\mysection}[1]{
+\setlength\arrayrulewidth{1pt}\arrayrulecolor{titlecolor}
+\begin{tabular}{p{0.01\textwidth}p{0.99\textwidth}}
+\hline
+\cellcolor{titlecolor} &  \textcolor{black}{\hwyk\LARGE \thesection ~ #1}
+\end{tabular}
+\arrayrulewidth=0.4pt
+\vspace{-0.7cm}
+}
+
+\newcommand{\mysubsection}[1]{
+\setlength\arrayrulewidth{1pt}\arrayrulecolor{titlecolor}
+\begin{tabular}{p{0.01\textwidth}p{0.99\textwidth}}
+\hline
+\cellcolor{titlecolor} &  \textcolor{black}{\hwyk\Large \thesubsection ~ #1} \\
+\hline
+\end{tabular}
+\arrayrulewidth=0.4pt
+\vspace{-0.5cm}
+}
+
+\newcommand{\mysubsubsection}[1]{
+\setlength\arrayrulewidth{1pt}\arrayrulecolor{titlecolor}
+\begin{tabular}{p{0.01\textwidth}p{0.95\textwidth}p{0.01\textwidth}}
+\hline
+\cellcolor{titlecolor} &  \textcolor{black}{\hwyk\large \thesubsubsection ~ #1} & \cellcolor{titlecolor} \\
+\hline
+\end{tabular}
+\arrayrulewidth=0.4pt
+\vspace{-0.5cm}
+}
+
+
+\newcommand{\myappendix}[1]{
+\begin{tabular}{p{0.01\textwidth}p{0.99\textwidth}}
+\cellcolor{black} &\cellcolor{backcolor} \textcolor{white}
+{\newline\hwyk\LARGE 附录\thechapter \  \ #1}%\Alph{\thechapter}
+\end{tabular}
+\arrayrulewidth=0.4pt
+}
+
+ 
+\newcommand{\appendixsection}[1]{
+\setlength\arrayrulewidth{1pt}\arrayrulecolor{backcolor}
+\begin{tabular}{p{0.01\textwidth}p{0.99\textwidth}}
+\hline
+\cellcolor{backcolor} &  \textcolor{black}{\hwyk\LARGE \thesection ~ #1}
+\end{tabular}
+\arrayrulewidth=0.4pt
+\vspace{-0.7cm}
+}
+
+\newcommand{\appendixsubsection}[1]{
+\setlength\arrayrulewidth{1pt}\arrayrulecolor{backcolor}
+\begin{tabular}{p{0.01\textwidth}p{0.99\textwidth}}
+\hline
+\cellcolor{backcolor} &  \textcolor{black}{\hwyk\Large \thesubsection ~ #1} \\
+\hline
+\end{tabular}
+\arrayrulewidth=0.4pt
+\vspace{-0.5cm}
+}
+
+\newcommand{\appendixsubsubsection}[1]{
+\setlength\arrayrulewidth{1pt}\arrayrulecolor{backcolor}
+\begin{tabular}{p{0.01\textwidth}p{0.95\textwidth}p{0.01\textwidth}}
+\hline
+\cellcolor{backcolor} &  \textcolor{black}{\hwyk\large \thesubsubsection ~ #1} & \cellcolor{backcolor} \\
+\hline
+\end{tabular}
+\arrayrulewidth=0.4pt
+\vspace{-0.5cm}
+}
+
+\newcommand{\mybackmatter}[1]{
+\begin{tabular}{p{0.01\textwidth}p{0.99\textwidth}}
+\cellcolor{black} &\cellcolor{backcolor} \textcolor{white}
+{\newline\hwyk\LARGE #1}
+\end{tabular}
+\arrayrulewidth=0.4pt
+}
+
+\begin{document}
+
+\begin{asydef}
+	texpreamble("\usepackage{xeCJK}");
+	texpreamble("\setCJKmainfont{SimSun}");
+	usepackage("amsmath");
+	usepackage("amssymb");
+	usepackage("siunitx");
+	import graph;
+	import math;
+\end{asydef}
+
+\maketitle
+
+\frontmatter
+
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{第\zhnumber{\thechapter}章\ \ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ \ \rm #1}{}}	%这两个命令第一次必须出现在\pagestyle{fancy}之后，否则\pagestyle{fancy}会覆盖掉其效果
+\markboth{\leftmark}{\rightmark}
+\fancyhf{}
+\fancyhead[CO]{\rightmark}
+\fancyhead[LE,RO]{$\cdot$\, \thepage\, $\cdot$}
+\fancyhead[CE]{\leftmark}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\chapter}[hang]{\hwyk\LARGE}
+{}{0mm}{\hspace{-0.4cm}\mycont}
+
+\tableofcontents
+
+\cleardoublepage
+
+\mainmatter
+ 
+\titleformat{\chapter}[hang]{\hwyk\LARGE}
+{}{0mm}{\hspace{-0.4cm}\mytitle}
+ 
+\titleformat{\section}[hang]{\hwyk\LARGE}
+{}{0mm}{\hspace{-0.5cm}\mysection}
+
+\titleformat{\subsection}[hang]{\hwyk\large}
+{}{0mm}{\hspace{-0.5cm}\mysubsection}
+
+\titleformat{\subsubsection}[hang]{\hwyk\large}
+{}{0mm}{\hspace{-0.5cm}\mysubsubsection}
+ 
+\titlespacing{\chapter}
+{0pc}{1.5ex plus .1ex minus .2ex}{.2pc}
+
+\input{chapter/chapter0}%第零章——前言
+
+\input{chapter/chapter1}%第一章——List 处理
+
+\input{chapter/chapter2}%第二章——实现编译
+
+\input{chapter/chapter4}%第三章——如何定义函数
+
+\input{chapter/chapter5}%第四章——几个与缓冲区有关的函数
+
+\input{chapter/chapter6}%第五章——几个复杂一点的函数
+
+\input{chapter/chapter8}%第六章——变窄与拓宽
+
+\input{chapter/chapter7}%第七章——car,cdr,cons:基本函数
+
+\input{chapter/chapter3}%第八章——剪切与存储文本
+
+\input{chapter/chapter9}%第九章——List是如何运行
+
+\input{chapter/chapter10}%第十章——召回文本
+
+\input{chapter/chapter11}%第十一章——循环与递归
+
+\input{chapter/chapter12}%第十二章——常规表达式查找
+
+\input{chapter/chapter13}%第十三章——用重复与正则表达式计数
+
+\input{chapter/chapter14}%第十四章——函数定义中的字数统计
+
+\input{chapter/chapter15}%第十五章——准备图片
+
+\input{chapter/chapter16}%第十六章——你的.emacs文件
+
+\input{chapter/chapter17}%第十七章——调试
+
+\input{chapter/chapter18}%第十八章——总结
+
+
+%以下插入附录
+
+
+\appendix
+
+\titleformat{\chapter}[hang]{\hwyk\LARGE}
+{}{0mm}{\hspace{-0.4cm}\myappendix}
+ 
+\titleformat{\section}[hang]{\hwyk\LARGE}
+{}{0mm}{\hspace{-0.5cm}\appendixsection}
+
+\titleformat{\subsection}[hang]{\hwyk\large}
+{}{0mm}{\hspace{-0.5cm}\appendixsubsection}
+
+\titleformat{\subsubsection}[hang]{\hwyk\large}
+{}{0mm}{\hspace{-0.5cm}\appendixsubsubsection}
+
+\renewcommand{\chaptermark}[1]{\markboth{附录\ \ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ \ \rm #1}{}}	%这两个命令第一次必须出现在\pagestyle{fancy}之后，否则\pagestyle{fancy}会覆盖掉其效果
+\markboth{\leftmark}{\rightmark}
+
+\input{chapter/appendixA.tex}%附录——the-the函数
+
+\input{chapter/appendixB.tex}%附录——运用the Kill Ring
+
+\input{chapter/appendixC.tex}%附录——含标记轴的图片
+
+\input{chapter/appendixD.tex}%附录——自由软件和免费手册
+
+\input{chapter/appendixE.tex}%附录——GNU 免费文档许可
+
+
+%%索引页
+
+
+\backmatter
+ 
+\titleformat{\chapter}[hang]{\hwyk\LARGE}
+{}{0mm}{\hspace{-0.4cm}\mybackmatter}
+
+\addcontentsline{toc}{chapter}{\listfigurename}{%
+\let\oldnumberline\numberline%
+\renewcommand{\numberline}{\figurename~\oldnumberline}%
+\listoffigures
+}
+
+%参考文献
+\input{chapter/bibliography.tex}
+
+\end{document}
